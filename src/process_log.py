@@ -38,7 +38,7 @@ def parse_request(request):
         ['199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/', 'HTTP/1.0', '200', '345']
     :rtype: list
     """
-    regex = '(.*?) - - \[(.*?)\] "(.*?)" (\d+) (\d+)'
+    regex = '(.*?) - - \[(.*?)\] "(.*?)" (\d\d\d) (.*?)'
     try :
         return re.match(regex, request).groups()
     except AttributeError:
