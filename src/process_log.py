@@ -13,6 +13,7 @@ programming challenge
 import re
 import os
 import time
+import pprint
 
 def read_file(log_file):
     """Read main log file and return of list of lines
