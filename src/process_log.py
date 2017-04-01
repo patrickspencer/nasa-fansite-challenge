@@ -17,6 +17,7 @@ import re
 import os
 import time
 import pprint
+import settings
 
 def read_file(log_file):
     """Read main log file and return of list of lines
@@ -164,9 +165,7 @@ def top_freq(d, n=10):
 if __name__ == "__main__":
     start_time = time.time()
 
-    log_file_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    log_file = os.path.join(log_file_dir, 'log_input', 'log.txt')
-
+    log_file = settings.load_log_file('log.txt')
     requests = read_file(log_file)
     domains = create_freq_hash(requests, n=100, m=0)
 

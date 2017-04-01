@@ -1,7 +1,9 @@
+import os
 import unittest
 import process_log
+import settings
 
-class TestStringMethods(unittest.TestCase):
+class TestProcessLog(unittest.TestCase):
 
     def test_update_hash(self):
         d = {'a': 1}
