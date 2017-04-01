@@ -72,20 +72,26 @@ def create_freq_hash(l, n=-1):
         update_hash(d, parse_request(request)[0])
     return d
 
-def create_freq_hash(l, n=-1):
+def create_freq_hash(l, n=-1, m=0):
     """Creates frequency hash.
 
     :param l: list or tuples of the form
         ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/', 'HTTP/1.0', '200', '345')
     :param n: first n elements of the list l to create a frequency hash table
         from. Used for testing purposes because sometimes the list l is just too
-        darn big.
+        darn big to go through the whole thing.
+    :param m: the mth attribute of the input tuples, of which we are counting
+        the frequency. Defaults to m=0, (the domain). Example: in the the tuple
+
+        ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/', 'HTTP/1.0', '200', '345')
+
+        m=0 would be the domain, m=1 would be the date, m=3 would be the http method, and so on
     :return: frequency dict
     :rtype: dict
     """
     d = {}
     for request in l[0:n]:
-        update_hash(d, parse_request(request)[0])
+        update_hash(d, parse_request(request)[m])
     return d
 
 def min_key(d):
