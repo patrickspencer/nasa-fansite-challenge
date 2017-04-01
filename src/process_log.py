@@ -15,27 +15,28 @@ import os
 import time
 
 def read_file(log_file):
-    """Read main log file
+    """Read main log file and return of list of lines
 
-    :param file: ascii log file
+    :param log_file: ascii log file
     :return: list of strings that look like this:
         '199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET / HTTP/1.0" 200 345'
     :rtype: list
     """
     requests = []
-    # TODO: fix error handling of open command
+    # TODO: fix error handling of open command. Right now we set it to ignore
+    #       incase something goes wrong
     with open(log_file, 'r', encoding='us-ascii', errors='ignore') as file_lines:
         for line in file_lines:
             requests.append(line)
     return requests
 
 def parse_request(request):
-    """Regex a request line from log file
+    """Regex a request line from log file and split it into a tuple of request attributes
 
     :param request: a string of the form:
         '199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET / HTTP/1.0" 200 345'
-    :return: list that looks like:
-        ['199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/', 'HTTP/1.0', '200', '345']
+    :return: tuple of request attrributes that looks like:
+        ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/', 'HTTP/1.0', '200', '345')
     :rtype: list
     """
     regex = '(.*?) - - \[(.*?)\] "(.*?)" (\d\d\d) (.*?)'
@@ -49,7 +50,7 @@ def update_hash(d, key):
     exist, add the key and set frequency to 1
 
     :param d: dict
-    :param d: string name of key
+    :param key: string name of key
     :return: void
     """
     d[key] = d.get(key, 0) + 1
