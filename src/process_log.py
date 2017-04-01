@@ -125,14 +125,19 @@ def min_value(d):
         {'a': 0, 'b': 4, 'c': 2}
     :return: key value of entry with smallest value
     :rtype: integer
+
+    Usage::
+
+        >>> d = {'a': 10,
+                 'b': 4,
+                 'c': 2,
+                 'd': 8,
+                 'e': 7,
+                 'f': 5}
+        >>> min_value(d)
+        '2'
     """
     return d[min_key(d)]
-
-if __name__ == "__main__":
-    start_time = time.time()
-
-    log_file_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    log_file = os.path.join(log_file_dir, 'log_input', 'log_head.txt')
 
 def top_freq(d, n=10):
     """Create a min hash of the entries in d with the top n frequencies
