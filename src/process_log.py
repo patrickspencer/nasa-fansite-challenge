@@ -104,6 +104,17 @@ def min_key(d):
         {'a': 0, 'b': 4, 'c': 2}
     :return: key value of entry with smallest value
     :rtype: string
+
+    Usage::
+
+        >>> d = {'a': 10,
+                 'b': 4,
+                 'c': 2,
+                 'd': 8,
+                 'e': 7,
+                 'f': 5}
+        >>> min_key(d)
+        'c'
     """
     return min(d, key=d.get)
 
