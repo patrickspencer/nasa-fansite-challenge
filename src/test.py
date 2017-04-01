@@ -1,5 +1,5 @@
 import unittest
-from src import process_log
+import process_log
 
 class TestStringMethods(unittest.TestCase):
 
