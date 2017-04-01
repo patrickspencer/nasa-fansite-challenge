@@ -35,7 +35,8 @@ def read_file(log_file):
     return requests
 
 def parse_request(request):
-    """Regex a request line from log file and split it into a tuple of request attributes
+    """Regex a request line from log file and split it into a tuple of request
+    attributes
 
     :param request: a string of the form:
         '199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET / HTTP/1.0" 200 345'
@@ -50,8 +51,8 @@ def parse_request(request):
         return False
 
 def update_hash(d, key):
-    """Look for key in d. If key exists add one to frequency count. If it doesn't
-    exist, add the key and set frequency to 1
+    """Look for key in d. If key exists add one to frequency count. If it
+    doesn't exist, add the key and set frequency to 1
 
     :param d: dict
     :param key: string name of key
