@@ -120,6 +120,27 @@ def min_key(d):
     """
     return min(d, key=d.get)
 
+def max_key(d):
+    """Search through a dict and get the key with the max value.
+
+    :param d: dict where the values are postive integers
+        {'a': 0, 'b': 4, 'c': 2}
+    :return: key value of entry with smallest value
+    :rtype: string
+
+    Usage::
+
+        >>> d = {'a': 10,
+                 'b': 4,
+                 'c': 2,
+                 'd': 8,
+                 'e': 7,
+                 'f': 5}
+        >>> max_key(d)
+        'a'
+    """
+    return max(d, key=d.get)
+
 def min_value(d):
     """Search through a dict and get the minimum value.
 
@@ -162,14 +183,45 @@ def top_freq(d, n=10):
                 top.pop(min_key(top), None)
     return top
 
+def order_dict(d):
+    """Order the elements of a dict by their values and return a list
+
+    :param d: dict where the values are postive integers
+        {'a': 0, 'b': 4, 'c': 2}
+    :param: destination file name "ex: hosts.txt"
+    :return: list of tuples the type:
+    [('b',4), ('c',2), ('a',)]
+    """
+
+
+def write_file(d, file_name):
+    """Write the entries of a dict to a file
+
+    :param d: dict where the values are postive integers
+        {'a': 0, 'b': 4, 'c': 2}
+    :param file_name: destination file name "ex: hosts.txt"
+    :return: Null
+    """
+    output_file = settings.log_output_file(file_name)
+    try:
+        os.remove(output_file)
+    except OSError:
+        pass
+    with open(output_file, 'a') as file:
+        while d:
+            max_key(d)
+            file.write(max_key(d) + "," + str(d[max_key(d)]) + "\n")
+            d.pop(max_key(d), None)
+
 if __name__ == "__main__":
     start_time = time.time()
 
     log_file = settings.load_log_file('log.txt')
     requests = read_file(log_file)
-    domains = create_freq_hash(requests, n=100, m=0)
+    hosts = create_freq_hash(requests, n=-1, m=0)
+    write_file(top_freq(hosts),'hosts.txt')
 
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(top_freq(domains))
+    # pp = pprint.PrettyPrinter(indent=4)
+    # pp.pprint(top_freq(hosts))
 
     print("--- %s seconds ---" % (time.time() - start_time))
