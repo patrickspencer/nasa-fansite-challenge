@@ -44,15 +44,67 @@ def parse_request(request):
     except AttributeError:
         return False
 
-def update(d, key):
-    """Update hash file. If key exists add one to support count. If it doesn't
-    exist, add the key and set support to 1
+def update_hash(d, key):
+    """Look for key in d. If key exists add one to frequency count. If it doesn't
+    exist, add the key and set frequency to 1
 
     :param d: dict
     :param d: string name of key
     :return: void
     """
     d[key] = d.get(key, 0) + 1
+
+def create_freq_hash(l, n=-1):
+    """Creates frequency hash.
+
+    :param l: list or tuples of the form
+        ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/', 'HTTP/1.0', '200', '345')
+    :param n: first n elements of the list l to create a frequency hash table
+        from. Used for testing purposes because sometimes the list l is just too
+        darn big.
+    :return: frequency dict
+    :rtype: dict
+    """
+    d = {}
+    for request in l[0:n]:
+        update_hash(d, parse_request(request)[0])
+    return d
+
+def create_freq_hash(l, n=-1):
+    """Creates frequency hash.
+
+    :param l: list or tuples of the form
+        ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/', 'HTTP/1.0', '200', '345')
+    :param n: first n elements of the list l to create a frequency hash table
+        from. Used for testing purposes because sometimes the list l is just too
+        darn big.
+    :return: frequency dict
+    :rtype: dict
+    """
+    d = {}
+    for request in l[0:n]:
+        update_hash(d, parse_request(request)[0])
+    return d
+
+def min_key(d):
+    """Search through a dict and get the key with the minimum value.
+
+    :param d: dict where the values are postive integers
+        {'a': 0, 'b': 4, 'c': 2}
+    :return: key value of entry with smallest value
+    :rtype: string
+    """
+    return min(d, key=d.get)
+
+def min_value(d):
+    """Search through a dict and get the minimum value.
+
+    :param d: dict where the values are postive integers
+        {'a': 0, 'b': 4, 'c': 2}
+    :return: key value of entry with smallest value
+    :rtype: integer
+    """
+    return d[min_key(d)]
 
 if __name__ == "__main__":
     start_time = time.time()
@@ -61,13 +113,20 @@ if __name__ == "__main__":
     log_file = os.path.join(log_file_dir, 'log_input', 'log_head.txt')
 
     requests = read_file(log_file)
-    d = {}
-    for request in requests:
-        r = parse_request(request)
-        update(d, r[0])
-        # print(r[0])
-        # print("request: " + request)
-    # print(d)
-    # parsed_requests = [parse_request(r) for r in requests]
+    d = create_freq_hash(requests, n=100)
+    # top is a min heap of most frequent ips of
+    top = {}
+    top["null"] = 0
+    for value, key in enumerate(d):
+        # the > isn't a >= so the top frequencies don't take into account if there
+        # are multiple ips with the same frequency.
+        # TODO: figure out what to do about ips with the same frequencies
+        if int(value) > min_value(top):
+            top[key] = value
+            if len(top) >= 10:
+                top.pop(min_key(top), None)
+
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(top)
 
     print("--- %s seconds ---" % (time.time() - start_time))
