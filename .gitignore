@@ -2,3 +2,4 @@ __pycache__/
 *.py[cod]
 log_input/log.txt
 log_input/log_head.txt
+log_output/*
