@@ -195,11 +195,17 @@ def order_dict(d):
 
 
 def write_file(d, file_name):
-    """Write the entries of a dict to a file
+    """Write the entries of a dict to a file.
 
     :param d: dict where the values are postive integers
         {'a': 0, 'b': 4, 'c': 2}
-    :param file_name: destination file name "ex: hosts.txt"
+    :param file_name: destination file name "ex: hosts.txt". Each line of the
+        destination file looks like `key,value` and the lines are ordered in
+        descending order by the value of the dicts. For example, with the above
+        example input file, the output file might look like this :
+        b,4
+        c,2
+        a,0
     :return: Null
     """
     output_file = settings.log_output_file(file_name)
