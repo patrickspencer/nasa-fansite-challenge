@@ -134,8 +134,14 @@ if __name__ == "__main__":
     log_file_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     log_file = os.path.join(log_file_dir, 'log_input', 'log_head.txt')
 
-    requests = read_file(log_file)
-    d = create_freq_hash(requests, n=100)
+def top_freq(d, n=10):
+    """Create a min hash of the entries in d with the top n frequencies
+    :param d: dict where the values are postive integers
+        {'a': 0, 'b': 4, 'c': 2}
+    :param n: the n keys with the highest value. Defaults to 10.
+    :return: subdict of d with n entries
+    :rtype: dict
+    """
     # top is a min heap of most frequent ips of
     top = {}
     top["null"] = 0
@@ -145,10 +151,20 @@ if __name__ == "__main__":
         # TODO: figure out what to do about ips with the same frequencies
         if int(value) > min_value(top):
             top[key] = value
-            if len(top) >= 10:
+            if len(top) >= n:
                 top.pop(min_key(top), None)
+    return top
+
+if __name__ == "__main__":
+    start_time = time.time()
+
+    log_file_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    log_file = os.path.join(log_file_dir, 'log_input', 'log.txt')
+
+    requests = read_file(log_file)
+    domains = create_freq_hash(requests, n=100, m=0)
 
     pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(top)
+    pp.pprint(top_freq(domains))
 
     print("--- %s seconds ---" % (time.time() - start_time))
