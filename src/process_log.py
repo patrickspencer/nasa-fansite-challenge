@@ -151,13 +151,13 @@ def top_freq(d, n=10):
     # top is a min heap of most frequent ips of
     top = {}
     top["null"] = 0
-    for value, key in enumerate(d):
-        # the > isn't a >= so the top frequencies don't take into account if there
+    for index, key in enumerate(d):
+        # The top frequencies don't take into account if there
         # are multiple ips with the same frequency.
         # TODO: figure out what to do about ips with the same frequencies
-        if int(value) > min_value(top):
-            top[key] = value
-            if len(top) >= n:
+        if d[key] > min_value(top):
+            top[key] = d[key]
+            if len(top) > n:
                 top.pop(min_key(top), None)
     return top
 
