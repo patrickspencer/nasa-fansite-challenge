@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-go.py
-~~~~~
+process_log.py
+~~~~~~~~~~~~~~
 Part of the Nasa Fansite Anaslytics Challenge, an Insight Data Engineer
-programming challenge
+programming challenge.
+
+process_log.py is the main file for processing logs
 
 :copyright: (c) 2017 by Patrick Spencer.
-:license: MIT, see LICENSE for more details.
+:license: Don't touch my stuff. But seriously, a restrictive EULA. See LICENSE
+    for more details.
 """
 
 import re
