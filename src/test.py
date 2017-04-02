@@ -1,7 +1,42 @@
 import os
+import models
+import settings
 import unittest
 import process_log
-import settings
+
+class TestModels(unittest.TestCase):
+
+    def test_request_init(self):
+        request_str = '199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET /history/apollo/ HTTP/1.0" 200 6245'
+        r = models.Request(request_str)
+        self.assertEqual(r.host, '199.72.81.55')
+        self.assertEqual(r.date_str, '01/Jul/1995:00:00:01 -0400')
+        self.assertEqual(r.method, 'GET')
+        self.assertEqual(r.resource, '/history/apollo/')
+        self.assertEqual(r.protocol, 'HTTP/1.0')
+        self.assertEqual(r.response, '200')
+        self.assertEqual(r.bytes, 6245)
+
+    def test_request_init2(self):
+        """Test if a request which didn't download anything returns zero bytes"""
+        request_str = '199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET /history/apollo/ HTTP/1.0" 404 -'
+        r = models.Request(request_str)
+        self.assertEqual(r.bytes, 0)
+
+    def test_request_init3(self):
+        """Test whether the regex can parse a request string that does not have
+        a transefer protocol at the end of its resource part"""
+        request_str = '215.145.83.92 - - [01/Jul/1995:00:00:41 -0400] "GET /shuttle/missions/sts-71/movies/movies.html" 200 3089'
+        r = models.Request(request_str)
+        self.assertEqual(r.protocol, None)
+
+        pass
+
+    def test_fixture_dir(self):
+        fixture = settings.load_fixture('domain_freq.txt')
+        fake_fixture = settings.load_fixture('not_a_file.txt')
+        self.assertTrue(os.path.exists(fixture))
+        self.assertFalse(os.path.exists(fake_fixture))
 
 class TestSettings(unittest.TestCase):
 

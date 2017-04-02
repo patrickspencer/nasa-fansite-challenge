@@ -18,6 +18,7 @@ import os
 import time
 import pprint
 import settings
+import models
 
 def read_file(log_file):
     """Read main log file and return of list of lines
@@ -32,24 +33,10 @@ def read_file(log_file):
     #       incase something goes wrong
     with open(log_file, 'r', encoding='us-ascii', errors='ignore') as file_lines:
         for line in file_lines:
+            # requests.append(parse_request(line))
+            # requests.append(models.Request(line))
             requests.append(line)
     return requests
-
-def parse_request(request):
-    """Regex a request line from log file and split it into a tuple of request
-    attributes
-
-    :param request: a string of the form:
-        '199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET / HTTP/1.0" 200 345'
-    :return: tuple of request attrributes that looks like:
-        ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/', 'HTTP/1.0', '200', '345')
-    :rtype: list
-    """
-    regex = '(.*?) - - \[(.*?)\] "(.*?)" (\d\d\d) (.*?)'
-    try :
-        return re.match(regex, request).groups()
-    except AttributeError:
-        return False
 
 def update_hash(d, key):
     """Look for key in d. If key exists add one to frequency count. If it
@@ -194,7 +181,6 @@ def order_dict(d):
     [('b',4), ('c',2), ('a',)]
     """
 
-
 def write_file(d, file_name):
     """Write the entries of a dict to a file.
 
@@ -223,12 +209,17 @@ def write_file(d, file_name):
 if __name__ == "__main__":
     start_time = time.time()
 
-    log_file = settings.load_log_file('log.txt')
+    log_file = settings.load_log_file('log_head.txt')
     requests = read_file(log_file)
-    hosts = create_freq_hash(requests, n=-1, m=0)
-    write_file(top_freq(hosts),'hosts.txt')
+    # hosts = create_freq_hash(requests, n=-1, m=0)
+    # write_file(top_freq(hosts),'hosts.txt')
 
-    # pp = pprint.PrettyPrinter(indent=4)
-    # pp.pprint(top_freq(hosts))
+    pp = pprint.PrettyPrinter(indent=4)
+
+    for request in requests[73:80]:
+        print(request)
+        r = models.Request(request)
+        print(r.resource)
+        print(r.protocol)
 
     print("--- %s seconds ---" % (time.time() - start_time))
