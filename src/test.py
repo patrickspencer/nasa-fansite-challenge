@@ -2,7 +2,7 @@ import os
 import models
 import settings
 import unittest
-import process_log
+import lib
 
 class TestModels(unittest.TestCase):
 
@@ -54,7 +54,7 @@ class TestProcessLog(unittest.TestCase):
 
     def test_update_hash(self):
         d = {'a': 1}
-        process_log.update_hash(d, 'a')
+        lib.update_hash(d, 'a')
         self.assertEqual(d['a'], 2)
 
     def test_min_heap(self):
@@ -71,8 +71,8 @@ class TestProcessLog(unittest.TestCase):
              'e': 7,
              'f': 5}
 
-        self.assertEqual(process_log.min_key(d), 'c')
-        self.assertNotEqual(process_log.min_key(d), 'a')
+        self.assertEqual(lib.min_key(d), 'c')
+        self.assertNotEqual(lib.min_key(d), 'a')
 
     def test_min_value(self):
         d = {'a': 10,
@@ -82,8 +82,8 @@ class TestProcessLog(unittest.TestCase):
              'e': 7,
              'f': 5}
 
-        self.assertEqual(process_log.min_value(d), 2)
-        self.assertNotEqual(process_log.min_key(d), 9)
+        self.assertEqual(lib.min_value(d), 2)
+        self.assertNotEqual(lib.min_key(d), 9)
 
     def test_read_file(self):
         pass
@@ -104,7 +104,7 @@ class TestProcessLog(unittest.TestCase):
              'domain_l': 9,
              'domain_m': 11,
              'domain_n': 14}
-        top = process_log.top_freq(domain_freq)
+        top = lib.top_freq(domain_freq)
         self.assertEqual(len(top), 10)
         self.assertEqual(top['domain_n'], 14)
         self.assertEqual(top['domain_k'], 12)
