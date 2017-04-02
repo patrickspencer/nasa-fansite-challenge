@@ -23,7 +23,7 @@ def read_file(log_file):
     """Read main log file and return of list of lines
 
     :param log_file: ascii log file
-    :return: list of strings that look like this:
+    :return: list of parsed requests that look like this:
         '199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET / HTTP/1.0" 200 345'
     :rtype: list
     """
@@ -88,9 +88,10 @@ def create_freq_hash(l, n=-1, m=0):
     :param m: the mth attribute of the input tuples, of which we are counting
         the frequency. Defaults to m=0, (the domain). Example: in the the tuple
 
-        ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/', 'HTTP/1.0', '200', '345')
+        ('199.72.81.55', '01', 'Jul', '1995', '00', '00', '01',
+        '0400', 'GET', '/', 'HTTP/1.0', '200', '345')
 
-        m=0 would be the domain, m=1 would be the date, m=3 would be the http method, and so on
+        m=0 would be the host, m=1 would be the day, m=3 the month, and so on
     :return: frequency dict
     :rtype: dict
     """
@@ -170,7 +171,7 @@ def top_freq(d, n=10):
     :return: subdict of d with n entries
     :rtype: dict
     """
-    # top is a min heap of most frequent ips of
+    # top is a min heap of most frequent domains of d
     top = {}
     top["null"] = 0
     for index, key in enumerate(d):
@@ -208,12 +209,12 @@ def write_file(d, file_name):
         a,0
     :return: Null
     """
-    output_file = settings.log_output_file(file_name)
+    output_location = settings.log_output_file(file_name)
     try:
-        os.remove(output_file)
+        os.remove(output_location)
     except OSError:
         pass
-    with open(output_file, 'a') as file:
+    with open(output_location, 'a') as file:
         while d:
             max_key(d)
             file.write(max_key(d) + "," + str(d[max_key(d)]) + "\n")
