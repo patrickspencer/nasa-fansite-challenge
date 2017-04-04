@@ -25,21 +25,5 @@ read the entire list into memory. One way we could improve this is by reading
 the file by chunks with something like the following 
 (taken from http://stackoverflow.com/a/8009942)
 
-```python
-def readInChunks(fileObj, chunkSize=2048):
-"""
-Lazy function to read a file piece by piece.
-Default chunk size: 2kB.
-"""
-while True:
-    data = fileObj.read(chunkSize)
-    if not data:
-        break
-    yield data
-
-f = open('bigFile')
-for chuck in readInChunks(f):
-do_something(chunk)
-```
-
-
+Just reading the log.txt file line by line and regexing for something like
+byte count takes about 60 seconds on my laptop.
