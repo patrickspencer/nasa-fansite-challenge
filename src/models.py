@@ -33,11 +33,14 @@ class Request(object):
             '199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] \
             "GET /blah.jpg HTTP/1.0" 200 345'
         :return: tuple of request attrributes that looks like:
-            ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/blah.jpg HTTP/1.0', '200', '345')
+            ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET /blah.jpg HTTP/1.0', '200', '345')
         Notice '/blah.jpg HTTP/1.0' doesn't separate resource and protocol so
         we do that later with split()
         """
-        regex = '(.*?) - - \[(.*?)\] "(\w*?)\s(.*?)" (\d\d\d)\s(.+)'
+        # regex = '(.*)\"(.*)\"(.*)\s(\S*|-)(?:\n)'
+        # regex = '(.*)\"(.*)\"(.*)\s(\S*|-)(?:\n)'
+        # ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/blah.jpg HTTP/1.0', '200', '345')
+        regex = '(.*?) - - \[(.*?)\] "(.*)" (\d\d\d)\s(.+)'
         try:
             groups = re.match(regex, request_str).groups()
         except AttributeError:
@@ -46,19 +49,35 @@ class Request(object):
         datetime_object = datetime.strptime(groups[1], '%d/%b/%Y:%H:%M:%S %z')
         resource = groups[3].split(' ')
         # check if bytes is set to - which happens on 302 or 404 responses
-        if groups[5] == '-':
+        if groups[-1] == '-':
             self.bytes = 0
         else:
-            self.bytes = int(groups[5])
+            self.bytes = int(groups[-1])
+
+        if groups:
+            host_str_arr = groups[2].split(' ')
+            # groups looks like one of the three options:
+            # 1. GET /blah.jpg HTTP/1.0
+            # 2. GET /blah.jpg
+            # 3. blah
+            method = ''
+            protocol = ''
+            resource = ''
+            if len(host_str_arr) == 1:
+                resource = host_str_arr[0]
+            if len(host_str_arr) == 2:
+                method = host_str_arr[0]
+                resource = host_str_arr[1]
+            if len(host_str_arr) == 3:
+                method = host_str_arr[0]
+                resource = host_str_arr[1]
+                protocol = host_str_arr[2]
 
         self.groups = groups
         self.host = groups[0]
         self.date_str = groups[1]
         self.date = datetime_object
-        self.method = groups[2]
-        self.resource = resource[0]
-        if len(resource) > 1:
-            self.protocol = resource[1]
-        else:
-            self.protocol = None
-        self.response = groups[4]
+        self.method = method
+        self.resource = resource
+        self.protocol = protocol
+        self.response = groups[3]

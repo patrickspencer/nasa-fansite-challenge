@@ -1,8 +1,8 @@
 import os
+import lib
 import models
 import settings
 import unittest
-import lib
 
 class TestModels(unittest.TestCase):
 
@@ -16,6 +16,24 @@ class TestModels(unittest.TestCase):
         self.assertEqual(r.protocol, 'HTTP/1.0')
         self.assertEqual(r.response, '200')
         self.assertEqual(r.bytes, 6245)
+        request_str2 = 'klothos.crl.research.digital.com - - [10/Jul/1995:16:45:50 -0400] "" 400 -'
+        r = models.Request(request_str2)
+        self.assertEqual(r.host, 'klothos.crl.research.digital.com')
+        self.assertEqual(r.date_str, '10/Jul/1995:16:45:50 -0400')
+        self.assertEqual(r.method, '')
+        self.assertEqual(r.resource, '')
+        self.assertEqual(r.protocol, '')
+        self.assertEqual(r.response, '400')
+        self.assertEqual(r.bytes, 0)
+        request_str2 = 'klothos.crl.research.digital.com - - [10/Jul/1995:16:45:50 -0400] "POST /history/apollo/" 400 -'
+        r = models.Request(request_str2)
+        self.assertEqual(r.host, 'klothos.crl.research.digital.com')
+        self.assertEqual(r.date_str, '10/Jul/1995:16:45:50 -0400')
+        self.assertEqual(r.method, 'POST')
+        self.assertEqual(r.resource, '/history/apollo/')
+        self.assertEqual(r.protocol, '')
+        self.assertEqual(r.response, '400')
+        self.assertEqual(r.bytes, 0)
 
     def test_request_init2(self):
         """Test if a request which didn't download anything returns zero bytes"""
@@ -28,7 +46,7 @@ class TestModels(unittest.TestCase):
         a transefer protocol at the end of its resource part"""
         request_str = '215.145.83.92 - - [01/Jul/1995:00:00:41 -0400] "GET /shuttle/missions/sts-71/movies/movies.html" 200 3089'
         r = models.Request(request_str)
-        self.assertEqual(r.protocol, None)
+        self.assertEqual(r.protocol, '')
 
         pass
 
