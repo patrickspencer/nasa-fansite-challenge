@@ -68,11 +68,11 @@ class TestSettings(unittest.TestCase):
         self.assertTrue(os.path.exists(fixture))
         self.assertFalse(os.path.exists(fake_fixture))
 
-class TestProcessLog(unittest.TestCase):
+class TestLib(unittest.TestCase):
 
-    def test_update_hash(self):
+    def test_update_hash_freq(self):
         d = {'a': 1}
-        lib.update_hash(d, 'a')
+        lib.update_hash_freq(d, 'a')
         self.assertEqual(d['a'], 2)
 
     def test_min_heap(self):
@@ -99,7 +99,6 @@ class TestProcessLog(unittest.TestCase):
              'd': 8,
              'e': 7,
              'f': 5}
-
         self.assertEqual(lib.min_value(d), 2)
         self.assertNotEqual(lib.min_key(d), 9)
 
@@ -108,30 +107,52 @@ class TestProcessLog(unittest.TestCase):
 
     def test_top_freq(self):
         domain_freq = {
-             'domain_a': 5,
-             'domain_b': 4,
-             'domain_c': 2,
-             'domain_d': 1,
-             'domain_e': 7,
-             'domain_f': 6,
-             'domain_g': 1,
-             'domain_h': 8,
-             'domain_i': 1,
-             'domain_j': 3,
-             'domain_k': 12,
-             'domain_l': 9,
-             'domain_m': 11,
-             'domain_n': 14}
+             'host_a': 5,
+             'host_b': 4,
+             'host_c': 2,
+             'host_d': 1,
+             'host_e': 7,
+             'host_f': 6,
+             'host_g': 1,
+             'host_h': 8,
+             'host_i': 1,
+             'host_j': 3,
+             'host_k': 12,
+             'host_l': 9,
+             'host_m': 11,
+             'host_n': 14}
         top = lib.top_freq(domain_freq)
         self.assertEqual(len(top), 10)
-        self.assertEqual(top['domain_n'], 14)
-        self.assertEqual(top['domain_k'], 12)
-        self.assertEqual(top['domain_l'], 9)
-        self.assertEqual(top['domain_b'], 4)
-        self.assertEqual(top['domain_j'], 3)
-        self.assertFalse('domain_d' in top)
-        self.assertFalse('domain_g' in top)
-        self.assertFalse('domain_i' in top)
+        self.assertEqual(top['host_n'], 14)
+        self.assertEqual(top['host_k'], 12)
+        self.assertEqual(top['host_l'], 9)
+        self.assertEqual(top['host_b'], 4)
+        self.assertEqual(top['host_j'], 3)
+        self.assertFalse('host_d' in top)
+        self.assertFalse('host_g' in top)
+        self.assertFalse('host_i' in top)
+
+    def test_create_host_freq_hash(self):
+        """I know it's the same as test_top_freq but it gives me extra piece of
+        mind to know I'm testing this function
+        """
+        freq_file = settings.load_fixture('domain_freq.txt')
+        requests = lib.read_file(freq_file)
+        freqs = lib.create_host_freq_hash(requests)
+        self.assertEqual(freqs['host_a'], 5)
+        self.assertEqual(freqs['host_b'], 4)
+        self.assertEqual(freqs['host_c'], 2)
+        self.assertEqual(freqs['host_d'], 1)
+        self.assertEqual(freqs['host_e'], 7)
+        self.assertEqual(freqs['host_f'], 6)
+        self.assertEqual(freqs['host_g'], 1)
+        self.assertEqual(freqs['host_h'], 8)
+        self.assertEqual(freqs['host_i'], 1)
+        self.assertEqual(freqs['host_j'], 3)
+        self.assertEqual(freqs['host_k'], 12)
+        self.assertEqual(freqs['host_l'], 9)
+        self.assertEqual(freqs['host_m'], 11)
+        self.assertEqual(freqs['host_n'], 14)
 
 if __name__ == '__main__':
     unittest.main()

@@ -15,30 +15,26 @@ lib.py contains helper functions
 
 import re
 import os
-import time
-import pprint
-import settings
 import models
+import settings
 
 def read_file(log_file):
     """Read main log file and return of list of lines
 
     :param log_file: ascii log file
-    :return: list of parsed requests that look like this:
-        '199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET / HTTP/1.0" 200 345'
-    :rtype: list
+    :return: :class:`Request <Request>`: object
+    :rtype: models.Request
     """
     requests = []
     # TODO: fix error handling of open command. Right now we set it to ignore
     #       incase something goes wrong
     with open(log_file, 'r', encoding='us-ascii', errors='ignore') as file_lines:
         for line in file_lines:
-            # requests.append(parse_request(line))
-            # requests.append(models.Request(line))
-            requests.append(line)
+            requests.append(models.Request(line))
+            # requests.append(line)
     return requests
 
-def update_hash(d, key):
+def update_hash_freq(d, key):
     """Look for key in d. If key exists add one to frequency count. If it
     doesn't exist, add the key and set frequency to 1
 
@@ -48,43 +44,19 @@ def update_hash(d, key):
     """
     d[key] = d.get(key, 0) + 1
 
-def create_freq_hash(l, n=-1):
+def create_host_freq_hash(requests):
     """Creates frequency hash.
 
-    :param l: list or tuples of the form
-        ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/', 'HTTP/1.0', '200', '345')
-    :param n: first n elements of the list l to create a frequency hash table
-        from. Used for testing purposes because sometimes the list l is just too
-        darn big.
-    :return: frequency dict
-    :rtype: dict
-    """
-    d = {}
-    for request in l[0:n]:
-        update_hash(d, parse_request(request)[0])
-    return d
-
-def create_freq_hash(l, n=-1, m=0):
-    """Creates frequency hash.
-
-    :param l: list or tuples of the form
-        ('199.72.81.55', '01/Jul/1995:00:00:01 -0400', 'GET', '/', 'HTTP/1.0', '200', '345')
+    :param l: list of :class:`Request <Request>` objects
     :param n: first n elements of the list l to create a frequency hash table
         from. Used for testing purposes because sometimes the list l is just too
         darn big to go through the whole thing.
-    :param m: the mth attribute of the input tuples, of which we are counting
-        the frequency. Defaults to m=0, (the domain). Example: in the the tuple
-
-        ('199.72.81.55', '01', 'Jul', '1995', '00', '00', '01',
-        '0400', 'GET', '/', 'HTTP/1.0', '200', '345')
-
-        m=0 would be the host, m=1 would be the day, m=3 the month, and so on
     :return: frequency dict
     :rtype: dict
     """
     d = {}
-    for request in l[0:n]:
-        update_hash(d, parse_request(request)[m])
+    for r in requests:
+        update_hash_freq(d, r.host)
     return d
 
 def min_key(d):
@@ -108,6 +80,27 @@ def min_key(d):
     """
     return min(d, key=d.get)
 
+def min_value(d):
+    """Search through a dict and get the minimum value.
+
+    :param d: dict where the values are postive integers
+        {'a': 0, 'b': 4, 'c': 2}
+    :return: value of entry with smallest value
+    :rtype: int
+
+    Usage::
+
+        >>> d = {'a': 10,
+                 'b': 4,
+                 'c': 2,
+                 'd': 8,
+                 'e': 7,
+                 'f': 5}
+        >>> min_key(d)
+        2
+    """
+    return d[min_key(d)]
+
 def max_key(d):
     """Search through a dict and get the key with the max value.
 
@@ -129,7 +122,7 @@ def max_key(d):
     """
     return max(d, key=d.get)
 
-def min_value(d):
+def max_value(d):
     """Search through a dict and get the minimum value.
 
     :param d: dict where the values are postive integers
@@ -148,7 +141,7 @@ def min_value(d):
         >>> min_value(d)
         '2'
     """
-    return d[min_key(d)]
+    return d[max_key(d)]
 
 def top_freq(d, n=10):
     """Create a min hash of the entries in d with the top n frequencies
@@ -181,7 +174,7 @@ def order_dict(d):
     [('b',4), ('c',2), ('a',)]
     """
 
-def write_file(d, file_name):
+def write_file(d, file_name, include_values=True):
     """Write the entries of a dict to a file.
 
     :param d: dict where the values are postive integers
@@ -193,6 +186,18 @@ def write_file(d, file_name):
         b,4
         c,2
         a,0
+    :param include_values: Bool: whether or not to include a comma and then
+        values of dict entries. For examples:
+
+            >>> write_file({'a': 0, 'b': 4, 'c': 2}, file, True)
+            b,4
+            c,2
+            a,0
+            >>> write_file({'a': 0, 'b': 4, 'c': 2}, file, False)
+            b
+            c
+            a
+
     :return: Null
     """
     output_location = settings.log_output_file(file_name)
@@ -203,6 +208,50 @@ def write_file(d, file_name):
     with open(output_location, 'a') as file:
         while d:
             max_key(d)
-            file.write(max_key(d) + "," + str(d[max_key(d)]) + "\n")
+            if include_values:
+                file.write(max_key(d) + "," + str(max_value(d)) + "\n")
+            else:
+                file.write(max_key(d) + "\n")
             d.pop(max_key(d), None)
 
+def create_bytes_dict(file):
+    """Reads file line by line makesdict that has entries like
+
+    :param file: full file name to load
+    :return: something that looks like this
+        {
+        'host1': bytes_used,
+        'host2': bytes_used,
+        }
+    """
+    d = {}
+    with open(file, 'r', encoding='us-ascii', errors='ignore') as file_lines:
+        for i, line in enumerate(file_lines):
+            r = models.Request(line)
+            # print('Line: ' + str(i))
+            d[r.host] = d.get(r.host, 0) + r.bytes
+    return d
+
+def get_top_dict_values(d, n=10):
+    """Return a dict of entries of the dict d which have the top n values
+
+    :param file: dict that looks like this
+        {
+        'key1': value1,
+        'key2': value1,
+         etc...
+        }
+    :return: dict of top n values
+        {
+        'key1': value1,
+        'key2': value1,
+        }
+    """
+
+    top = {}
+    for i in range(0,n):
+        key = max_key(d)
+        value = max_value(d)
+        top[key] = value
+        del d[key]
+    return top
