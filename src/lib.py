@@ -220,8 +220,8 @@ def create_bytes_dict(file):
     :param file: full file name to load
     :return: something that looks like this
         {
-        'host1': bytes_used,
-        'host2': bytes_used,
+        'resource1': bytes_used,
+        'resource': bytes_used,
         }
     """
     d = {}
@@ -229,7 +229,7 @@ def create_bytes_dict(file):
         for i, line in enumerate(file_lines):
             r = models.Request(line)
             # print('Line: ' + str(i))
-            d[r.host] = d.get(r.host, 0) + r.bytes
+            d[r.resource] = d.get(r.resource, 0) + r.bytes
     return d
 
 def get_top_dict_values(d, n=10):
