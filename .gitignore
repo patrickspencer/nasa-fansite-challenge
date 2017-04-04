@@ -3,3 +3,4 @@ __pycache__/
 log_input/log.txt
 log_input/log_head.txt
 log_output/*
+src/golib/*
