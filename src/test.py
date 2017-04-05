@@ -3,6 +3,7 @@ import lib
 import models
 import settings
 import unittest
+from datetime import datetime
 
 class TestModels(unittest.TestCase):
 
@@ -162,7 +163,7 @@ class TestLib(unittest.TestCase):
     def update_401_d(self):
         last_logins = [804612566, 804612567, 804612568]
         block_list = {}
-        lib.update_block_list(block_list, 'host1', max(las_logins))
+        lib.update_block_list(block_list, 'host1', max(last_logins))
         self.assertTrue(804612568 in last_logins)
 
     def test_check_for_mult_logins(self):
@@ -172,6 +173,32 @@ class TestLib(unittest.TestCase):
         self.assertTrue(failed_logins[0] == '207.109.29.70 - - [01/Jul/1995:01:28:41 -0400] "POST /login HTTP/1.0" 401 1420')
         self.assertTrue(failed_logins[1] == '207.109.29.70 - - [01/Jul/1995:01:35:14 -0400] "POST /login HTTP/1.0" 401 1420')
         self.assertTrue(failed_logins[2] == '207.246.17.94 - - [01/Jul/1995:02:51:27 -0400] "POST /login HTTP/1.0" 401 1420')
+    def test_find_busiest_intervals(self):
+        fixture = settings.load_fixture('busiest_hour_test.txt')
+        requests = lib.read_file(fixture)
+        intervals = lib.find_busiest_intervals(requests, time_interval = 5, n = 11)
+        self.assertTrue(intervals[804571201] == 1)
+        self.assertTrue(intervals[804571202] == 1)
+        self.assertTrue(intervals[804571203] == 1)
+        self.assertTrue(intervals[804571204] == 1)
+        self.assertTrue(intervals[804571205] == 6)
+        self.assertTrue(intervals[804571206] == 6)
+        self.assertTrue(intervals[804571207] == 7)
+        self.assertTrue(intervals[804571208] == 14)
+        self.assertTrue(intervals[804571209] == 20)
+        self.assertTrue(intervals[804571210] == 21)
+        self.assertTrue(intervals[804571211] == 24)
+
+    def test_timestamp_to_date_str(self):
+        dates = [
+                '01/Jul/1995:00:00:12 -0400',
+                '03/Jul/1996:04:30:45 -0400',
+                '11/Oct/2016:13:40:20 -0400',
+                '01/Jul/1995:00:00:09 -0400'
+                ]
+        for date in dates:
+            timestamp = int(datetime.strptime(date, '%d/%b/%Y:%H:%M:%S %z').timestamp())
+            self.assertTrue(lib.timestamp_to_date_str(timestamp), date)
 
 if __name__ == '__main__':
     unittest.main()
