@@ -18,6 +18,41 @@ count up the amount of bytes used for that resource and then look for all
 request for the next resources over this pruned list. This algorithm is
 O(nlog(n)).
 
+# Feature 4
+
+For this feature, we can view the log as an increasing sequence of unix timestamps 
+l = (t[0], t[1], ..., t[n]).
+
+The algorithm is the following:
+
+d = time delta in seconds (we will use 3600 for an hour)
+
+s = starting time
+e = ending time = s+3600
+I = current interval = [s, e]
+current 
+
+while ending time is less t[n]
+    delete all t[i] in I that shouldn't be there
+    find all t[i] not in I that should be in I
+    count elements in I
+    Compare count to a top 10 list
+    s = s+1
+
+max_time = t[n]
+s = t[m]
+e = t[m] + 3600
+
+while e < max_time
+    
+    Find largest i so that t[i] < e
+    find all t[i] not in I that should be in I
+    count elements in I
+    Compare count to a top 10 list
+    s = s+1
+    e = t[m] + 3600
+
+
 # Bad parts
 
 What makes this program slow is, one, it's written in python, and, two, we
