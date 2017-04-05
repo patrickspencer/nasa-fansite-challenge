@@ -25,27 +25,34 @@ pp = pprint.PrettyPrinter(indent=4)
 if __name__ == "__main__":
     start_time = time.time()
 
-    log_file_name = 'log.txt'
-    log_file = settings.load_log_file(log_file_name)
-
+    # log_file_name = 'log_head_100000.txt'
+    # log_file = settings.load_log_file(log_file_name)
+    # requests = lib.read_file(log_file)
 
     # print("--- Starting frequency count ---")
     #
-    # requests = lib.read_file(log_file)
     # hosts = lib.create_host_freq_hash(requests)
     # lib.write_file(lib.top_freq(hosts),'hosts.txt')
     #
     # print("--- Time to find top frequencies: %s secs ---" % (time.time() - start_time))
 
-    start_time_2 = time.time()
+    # start_time_2 = time.time()
+    #
+    # print("--- Starting most used resource ---")
+    #
+    # bytes_dict = lib.create_bytes_dict(log_file)
+    # top_bytes = lib.get_top_dict_values(bytes_dict, 10)
+    # pp.pprint(top_bytes)
+    # lib.write_file(top_bytes,'resources.txt', include_values=True)
+    #
+    # print("--- Time to find most demanding resources: %s secs ---" % (time.time() - start_time_2))
 
-    print("--- Starting most used resource ---")
+    fixture = settings.load_fixture('block_list_test.txt')
+    requests = lib.read_file(fixture)
+    print(lib.check_for_mult_logins(requests))
+    #
+    # pp.pprint(block_list)
 
-    bytes_dict = lib.create_bytes_dict(log_file)
-    top_bytes = lib.get_top_dict_values(bytes_dict, 10)
-    pp.pprint(top_bytes)
-    lib.write_file(top_bytes,'resources.txt', include_values=True)
-
-    print("--- Time to find most demanding resources: %s secs ---" % (time.time() - start_time_2))
+        # last = int(r.date.timestamp())
 
     print("--- Total run time: %s seconds ---" % (time.time() - start_time))

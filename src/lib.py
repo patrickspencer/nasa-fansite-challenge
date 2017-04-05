@@ -255,3 +255,78 @@ def get_top_dict_values(d, n=10):
         top[key] = value
         del d[key]
     return top
+
+def remove_min(arr):
+    """Remove the minimum value from an array
+    :param arr: array
+    :rtype: list
+    """
+    return arr.remove(min(arr))
+
+def update_block_list(d, host, timestamp):
+    """add a host to the block list
+    :param d: dict of the form:
+        {
+            'host1': [804612566, 804612567, 804612568]
+        }
+    :param host: host
+    :param timestamp: the unix timestamp of the last timestamp of the 3
+        consecutive failed logins within a certain 20 sec period
+    """
+    if host not in d:
+        d[host] = [timestamp]
+    else:
+        d[host].append(timestamp)
+    return d
+
+def update_401_d(d, r, block_list):
+    """Updates dict that assigns a host to an array of unix timestamps for 401 access errors for that host
+    :param d: dict
+    :param r: :class:`Request <request>`
+    :param block_list: a ban_list dict that keeps track of which hosts have been blocked
+    :return: a dict of this form:
+    {
+    'host1': [804612566, 804612567, 804612568]
+    'host2': [804626197, 804626198]
+    }
+    All timestamp arrays have at most 3 time stamps since we only need to compare the last 3 logins
+    """
+    if r.host not in d:
+        d[r.host] = [r.timestamp]
+    else:
+        # for failed_login_time in d[r.host]:
+            # if r.date - failed_login_time
+        # we prune the array down to 2 before we add the current request
+        # since we only need to compare the current request timestamp to
+        # the last 2
+        last_logins = d[r.host]
+        if len(last_logins) >= 3:
+            remove_min(d[r.host])
+        last_logins.append(r.timestamp)
+        # we now have an array (d[r.host]) with 3 time stamps
+        # We only need to find the difference between the max and min
+        # because if this difference is 20 secs or greater than so is the
+        # difference between the max and middle or the middle and min.
+        if len(last_logins) ==3 and max(last_logins) - min(last_logins) <= 20:
+            update_block_list(block_list, r.host, max(last_logins))
+
+def check_for_mult_logins(requests):
+    """Check a list of requests to see if there are 3 or more 401 request
+    responses within a 20 second period
+    :param requests: :class:`Request <request>`
+    :return: a ditionary or blocked hosts that looks like
+    """
+    # d is the dictionary that temporarily holds the last 3 login attempts
+    d = {}
+    # block_list is the dictionary that holds when a host was blocked
+    block_list = {}
+    # bad_logins is an array that holds logins after a ban was started but
+    # before the 5 minute ban period has ended
+    bad_logins = []
+    for r in requests:
+        if r.response == '401':
+            if r.host in block_list and r.timestamp - max(block_list[r.host]) <= 300:
+                bad_logins.append([r.host, r.date_str])
+            else:
+                update_401_d(d, r, block_list)
+    return bad_logins

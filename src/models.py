@@ -46,7 +46,7 @@ class Request(object):
         except AttributeError:
             False
 
-        datetime_object = datetime.strptime(groups[1], '%d/%b/%Y:%H:%M:%S %z')
+        dt = datetime.strptime(groups[1], '%d/%b/%Y:%H:%M:%S %z')
         resource = groups[3].split(' ')
         # check if bytes is set to - which happens on 302 or 404 responses
         if groups[-1] == '-':
@@ -73,10 +73,12 @@ class Request(object):
                 resource = host_str_arr[1]
                 protocol = host_str_arr[2]
 
+        self.request_str = request_str.rstrip()
         self.groups = groups
         self.host = groups[0]
         self.date_str = groups[1]
-        self.date = datetime_object
+        self.date = dt
+        self.timestamp = int(dt.timestamp())
         self.method = method
         self.resource = resource
         self.protocol = protocol

@@ -50,12 +50,6 @@ class TestModels(unittest.TestCase):
 
         pass
 
-    def test_fixture_dir(self):
-        fixture = settings.load_fixture('domain_freq.txt')
-        fake_fixture = settings.load_fixture('not_a_file.txt')
-        self.assertTrue(os.path.exists(fixture))
-        self.assertFalse(os.path.exists(fake_fixture))
-
 class TestSettings(unittest.TestCase):
 
     def test_log_input_dir(self):
@@ -153,6 +147,31 @@ class TestLib(unittest.TestCase):
         self.assertEqual(freqs['host_l'], 9)
         self.assertEqual(freqs['host_m'], 11)
         self.assertEqual(freqs['host_n'], 14)
+
+    def test_remove_min_value(self):
+        arr = [804626197, 804626198, 804626201]
+        lib.remove_min(arr)
+        self.assertEqual(arr, [804626198, 804626201])
+
+    def update_block_list(self):
+        last_logins = [804612566, 804612567, 804612568]
+        block_list = {}
+        lib.update_block_list(block_list, 'host1', max(las_logins))
+        self.assertTrue(804612568 in last_logins)
+
+    def update_401_d(self):
+        last_logins = [804612566, 804612567, 804612568]
+        block_list = {}
+        lib.update_block_list(block_list, 'host1', max(las_logins))
+        self.assertTrue(804612568 in last_logins)
+
+    def test_check_for_mult_logins(self):
+        fixture = settings.load_fixture('block_list_test.txt')
+        requests = lib.read_file(fixture)
+        failed_logins = lib.check_for_mult_logins(requests)
+        self.assertTrue(failed_logins[0] == '207.109.29.70 - - [01/Jul/1995:01:28:41 -0400] "POST /login HTTP/1.0" 401 1420')
+        self.assertTrue(failed_logins[1] == '207.109.29.70 - - [01/Jul/1995:01:35:14 -0400] "POST /login HTTP/1.0" 401 1420')
+        self.assertTrue(failed_logins[2] == '207.246.17.94 - - [01/Jul/1995:02:51:27 -0400] "POST /login HTTP/1.0" 401 1420')
 
 if __name__ == '__main__':
     unittest.main()
