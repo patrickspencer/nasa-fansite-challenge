@@ -20,6 +20,13 @@ O(nlog(n)).
 
 # Feature 4
 
+
+Running this is feature is the fastest of all the features in this program. It
+takes about 8.5 seconds to run after each line from the log file has been
+loaded into memory.
+
+## Explanation of algorithm
+
 For this feature, we can view the log as an increasing sequence of unix timestamps 
 l = (t[0], t[1], ..., t[n]).
 
@@ -51,7 +58,6 @@ while e < max_time
     Compare count to a top 10 list
     s = s+1
     e = t[m] + 3600
-
 
 # Bad parts
 
