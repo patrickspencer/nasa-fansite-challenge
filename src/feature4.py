@@ -28,6 +28,14 @@ if __name__ == "__main__":
     log_file = settings.load_log_file(log_file_name)
     requests = lib.read_file(log_file)
 
+    # print("--- Starting to finding busiest hours ---")
+
+    intervals = lib.find_busiest_intervals(requests, time_interval = 5, n = 10)
+    lib.write_busiest_times(intervals)
+
+    # print("--- Time to find failed login attempts: %s secs ---" % (time.time() - start_time_3))
+
+
     # for ts in top_ten:
     #     reconverted_stamp = datetime.datetime.fromtimestamp(ts).strftime('%d/%m/%Y:%H:%M:%S %z')
     #     print(str(ts) + ' <-> ' + str(reconverted_stamp) + ' <-> ' + str(top_ten[ts]))
@@ -36,7 +44,7 @@ if __name__ == "__main__":
     #     dt = datetime.datetime.fromtimestamp(int(timestamp)).strftime('%d/%m/%Y:%H:%M:%S %z')
     #     dt = dt + '-0400'
     #     top_ten_with_dates[dt] = top_ten[timestamp]
-    # pp = pprint.PrettyPrinter(indent=4)
+    pp = pprint.PrettyPrinter(indent=4)
     # pp.pprint(top_ten)
     # pp.pprint(top_ten_with_dates)
     # print('i: ' + str(i))
@@ -44,5 +52,5 @@ if __name__ == "__main__":
     # for i, r in enumerate(requests):
     #     print(i, r.timestamp)
 
-pp.pprint('Busiest intervals:')
-pp.pprint(lib.find_busiest_interval(requests, time_interval = 5, n= 3))
+    pp.pprint('Busiest intervals:')
+    pp.pprint(lib.find_busiest_intervals(requests, time_interval = 5, n= 3))
