@@ -19,40 +19,65 @@ import models
 import settings
 from vendor import click
 
-@click.group()
-def feature():
-    pass
+# @click.group()
+# def feature():
+#     pass
+#
+# @click.command()
+# def one():
+#     log_file_name = 'log_head_1000.txt'
+#     log_file = settings.load_log_file(log_file_name)
+#     requests = lib.read_file(log_file)
+#
+#     start_time = time.time()
+#
+#     print("--- Starting frequency count ---")
+#
+#     hosts = lib.create_host_freq_hash(requests)
+#     lib.write_file(lib.top_freq(hosts),'hosts.txt')
+#
+#     print("--- Time to find top frequencies: %s secs ---" % (time.time() - start_time))
 
-@click.command()
-def one():
+# @click.command()
+# def three():
+#     """Find busiest hours"""
+#
+#     start_time = time.time()
+#
+#     print("--- Starting to load file for busiest hour  ---")
+#
+#     log_file_name = 'log_head_100.txt'
+#     log_file = settings.load_log_file(log_file_name)
+#     requests = lib.read_file(log_file)
+#
+#     print("--- Time it took to load file: %s secs ---" % (time.time() - start_time))
+#
+#     start_time_4 = time.time()
+#
+#     print("--- Starting to finding busiest hours ---")
+#
+#     intervals = lib.find_busiest_intervals(requests, time_interval = 3600, n = 10)
+#     print(intervals)
+#     # lib.write_busiest_times(intervals)
+#
+#     print("--- Time to find busiest hours: %s secs ---" % (time.time() - start_time_4))
+#
+#     print("--- Total run time: %s seconds ---" % (time.time() - start_time))
+
+# feature.add_command(one)
+# feature.add_command(three)
+
+if __name__ == "__main__":
+    # feature()
+    # start_time = time.time()
+
+    # print("--- Starting to load file  ---")
+
     log_file_name = 'log_head_1000.txt'
     log_file = settings.load_log_file(log_file_name)
     requests = lib.read_file(log_file)
 
-    start_time = time.time()
-
-    print("--- Starting frequency count ---")
-
-    hosts = lib.create_host_freq_hash(requests)
-    lib.write_file(lib.top_freq(hosts),'hosts.txt')
-
-    print("--- Time to find top frequencies: %s secs ---" % (time.time() - start_time))
-
-feature.add_command(one)
-
-
-pp = pprint.PrettyPrinter(indent=4)
-
-if __name__ == "__main__":
-    start_time = time.time()
-
-    print("--- Starting to load file  ---")
-
-    log_file_name = 'log.txt'
-    log_file = settings.load_log_file(log_file_name)
-    requests = lib.read_file(log_file)
-
-    print("--- Time it took to load file: %s secs ---" % (time.time() - start_time))
+    # print("--- Time it took to load file: %s secs ---" % (time.time() - start_time))
 
     # start_time_1 = time.time()
 
@@ -85,12 +110,16 @@ if __name__ == "__main__":
     # print("--- Time to find failed login attempts: %s secs ---" % (time.time() - start_time_3))
 
     start_time_4 = time.time()
+    log_file_name = 'log_head_1000.txt'
+    log_file = settings.load_log_file(log_file_name)
+    requests = lib.read_file(log_file)
 
     print("--- Starting to finding busiest hours ---")
 
     intervals = lib.find_busiest_intervals(requests, time_interval = 3600, n = 10)
-    lib.write_busiest_times(intervals)
+    print(intervals)
+    # lib.write_busiest_times(intervals)
 
     print("--- Time to find failed login attempts: %s secs ---" % (time.time() - start_time_4))
-
-    print("--- Total run time: %s seconds ---" % (time.time() - start_time))
+    #
+    # print("--- Total run time: %s seconds ---" % (time.time() - start_time))
