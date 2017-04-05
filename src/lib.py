@@ -17,6 +17,7 @@ import re
 import os
 import models
 import settings
+import datetime
 
 def read_file(log_file):
     """Read main log file and return of list of lines
@@ -366,7 +367,7 @@ def update_top_dict(d, key, value, n = 10):
             d.pop(min_key(d), None)
     return d
 
-def find_busiest_interval(requests, time_interval, n=10):
+def find_busiest_intervals(requests, time_interval, n=10):
     """Find the n top time intervals with the most requests in them. We
     can view requests as a sequence of non-decreasing sequence of
     integers (unixtime stamps). This function searches to find what the
@@ -389,49 +390,62 @@ def find_busiest_interval(requests, time_interval, n=10):
         """The timestamp of the ith request"""
         return requests[i].timestamp
 
-    # The interval length in seconds
     top_n = {}
-    top_n['null'] = 0
+    top_n['0'] = 0
     a = requests[0].timestamp
     max_time = requests[-1].timestamp
     i, j = 0, 0
     while a+time_interval <= max_time+1:
         # delete times that shouldn't be in bin
-        # print(' --- --- --- ---')
-        # print('Time interval: [' + str(a) + ',' + str(a+time_interval - 1) + ']')
-        # print('starting i: ' + str(i))
-        # print('starting j: ' + str(j))
         while t(i) < a:
             i += 1
         # Find the the smallest j value so that t(j) < a + time_delta
+        # which is to find times that should be in the bin
         while t(j+1) < a + time_interval:
-            # print('t(j) inside while loop: ' + str(t(j)))
-            # print('j+1 < len(requests): ' + str(j+1 < len(requests)))
-            # print('j+1: ' + str(j+1))
-            # print('len(requests) ' + str(len(requests)))
-            # check to see we haven't reached the end of the array
             if j+1 < len(requests)-1:
                 j += 1
             else:
                 break
-            # print('j inside while loop: ' + str(j))
-        # print('a+time_delta: ' + str(a + time_delta))
-        # print('i: ' + str(i))
-        # print('j: ' + str(j))
-        # print('First element in this interval: t(' + str(i) + '): ' + str(t(i)))
-        # print('Last element in this interval: t(' + str(j) + '): ' + str(t(j)))
-        # m = number of elements in the interval
         if j+1 == len(requests)-1:
             # this whole algorithm doesn't count the last item in the last interval
             m = j - i + 2
         else:
             m = j - i + 1
-        # print('number of elements in time interval: ' + str(m) )
-        # print('i: ' + str(i))
-        # print('t(i): ' + str(t(i)))
-        # print('requests[i].host: ' + str(requests[i].host))
         update_top_dict(top_n, a, m, n)
-        # print('m: ' + str(m))
-        # print(top_ten)
         a = a + 1
     return top_n
+
+def timestamp_to_date_str(timestamp):
+    """Converte a unix timestamp to a string of the form
+    '03/Jul/1996:04:30:45 -0400'
+    """
+    dt = datetime.datetime.fromtimestamp(timestamp).strftime('%d/%m/%Y:%H:%M:%S %z')
+    return dt + '-0400'
+
+def write_busiest_times(top_n):
+    """Write the entries of a top_n dict to the file hours.txt
+    :param top_n: top_n is a dict that looks like
+       top_n = {
+                804571204: 1,
+                804571205: 6,
+                804571207: 7,
+                804571208: 14,
+                804571209: 20,
+                804571210: 21,
+                804571211: 24,
+                804571206: 6}
+       }
+
+    :return: Null
+    """
+    file_name = 'hours.txt'
+    output_location = settings.log_output_file(file_name)
+    try:
+        os.remove(output_location)
+    except OSError:
+        pass
+    with open(output_location, 'a') as file:
+        while top_n:
+            date_str = timestamp_to_date_str(max_key(top_n))
+            file.write(date_str + ',' + str(max_value(top_n)) + '\n')
+            top_n.pop(max_key(top_n), None)
