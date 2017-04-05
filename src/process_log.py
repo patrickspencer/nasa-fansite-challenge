@@ -9,8 +9,6 @@ programming challenge.
 process_log.py is the main file for processing logs
 
 :copyright: (c) 2017 by Patrick Spencer.
-:license: Don't touch my stuff. But seriously, a restrictive EULA. See LICENSE
-    for more details.
 """
 
 import re

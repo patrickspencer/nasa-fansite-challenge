@@ -9,8 +9,6 @@ programming challenge.
 settings.py contains file paths and other settings
 
 :copyright: (c) 2017 by Patrick Spencer.
-:license: Don't touch my stuff. But seriously, a restrictive EULA. See LICENSE
-    for more details.
 """
 
 import os
