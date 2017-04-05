@@ -343,3 +343,95 @@ def write_blocked(failed_logins):
     with open(output_location, 'a') as file:
         for line in failed_logins:
             file.write(line + '\n')
+
+def update_top_dict(d, key, value, n = 10):
+    """Update the dict holding the top values. Checks to see if
+    value is greater than the minimum value of d. Also deletes
+    smallest value of d if d has more than n elements
+
+    :param d: the dict holding the top values. It's of the form:
+        d = {'a': 10,
+             'b': 4,
+             'c': 2,
+             'd': 8}
+
+    :param key: the name of the value to check the dict against
+    :param value: the value to check to see is in the top n elements
+    :param n: how many elements the dict d should have
+    :return: an updated dict d.
+    """
+    if value > min_value(d):
+        d[key] = value
+        if len(d) > n:
+            d.pop(min_key(d), None)
+    return d
+
+def find_busiest_interval(requests, time_interval, n=10):
+    """Find the n top time intervals with the most requests in them. We
+    can view requests as a sequence of non-decreasing sequence of
+    integers (unixtime stamps). This function searches to find what the
+    busiest block of time is. The length of the block of time id td
+    (time delta) in seconds.
+
+    :param requests: a list of :class:`Request ,
+    :param time_interval: the length of the time intervals
+    :param n: The dict will return the top n intervals with the most
+        requests
+    :return: a dist of the form
+        {804571209: 20,
+         804571210: 21,
+         804571211: 24}
+        where somethign like 804571209 is the unix time stamp of the
+        start of the interval which has 20 requests in it.
+    """
+
+    def t(i):
+        """The timestamp of the ith request"""
+        return requests[i].timestamp
+
+    # The interval length in seconds
+    top_n = {}
+    top_n['null'] = 0
+    a = requests[0].timestamp
+    max_time = requests[-1].timestamp
+    i, j = 0, 0
+    while a+time_interval <= max_time+1:
+        # delete times that shouldn't be in bin
+        # print(' --- --- --- ---')
+        # print('Time interval: [' + str(a) + ',' + str(a+time_interval - 1) + ']')
+        # print('starting i: ' + str(i))
+        # print('starting j: ' + str(j))
+        while t(i) < a:
+            i += 1
+        # Find the the smallest j value so that t(j) < a + time_delta
+        while t(j+1) < a + time_interval:
+            # print('t(j) inside while loop: ' + str(t(j)))
+            # print('j+1 < len(requests): ' + str(j+1 < len(requests)))
+            # print('j+1: ' + str(j+1))
+            # print('len(requests) ' + str(len(requests)))
+            # check to see we haven't reached the end of the array
+            if j+1 < len(requests)-1:
+                j += 1
+            else:
+                break
+            # print('j inside while loop: ' + str(j))
+        # print('a+time_delta: ' + str(a + time_delta))
+        # print('i: ' + str(i))
+        # print('j: ' + str(j))
+        # print('First element in this interval: t(' + str(i) + '): ' + str(t(i)))
+        # print('Last element in this interval: t(' + str(j) + '): ' + str(t(j)))
+        # m = number of elements in the interval
+        if j+1 == len(requests)-1:
+            # this whole algorithm doesn't count the last item in the last interval
+            m = j - i + 2
+        else:
+            m = j - i + 1
+        # print('number of elements in time interval: ' + str(m) )
+        # print('i: ' + str(i))
+        # print('t(i): ' + str(t(i)))
+        # print('requests[i].host: ' + str(requests[i].host))
+        update_top_dict(top_n, a, m, n)
+        # print('m: ' + str(m))
+        # print(top_ten)
+        a = a + 1
+    return top_n

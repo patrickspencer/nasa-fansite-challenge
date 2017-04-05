@@ -28,84 +28,21 @@ if __name__ == "__main__":
     log_file = settings.load_log_file(log_file_name)
     requests = lib.read_file(log_file)
 
-    top_ten = {}
-    top_ten['null'] = 0
-    def update_top_ten(d, key, value, n = 10):
-        if value > lib.min_value(d):
-            d[key] = value
-            if len(d) > n:
-                d.pop(lib.min_key(d), None)
-    # update_top_ten(top_ten, )
-
-
-    a = requests[0].timestamp
-    # The interval length in seconds
-    time_delta = 5
-    max_time = requests[-1].timestamp
-    def t(i):
-        """The timestamp of the ith request"""
-        return requests[i].timestamp
-    i = 0
-    j = 0
-    # print(max_time)
-    # print('Start time: ' + str(a))
-    while a+time_delta <= max_time+1:
-        # delete times that shouldn't be in bin
-        # print(' --- --- --- ---')
-        # print('Start another round of a++: i, j: ' + str(i) + ',' + str(j))
-        # print('Time interval: [' + str(a) + ',' + str(a+time_delta - 1) + ']')
-        # print('starting i: ' + str(i))
-        # print('starting j: ' + str(j))
-        while t(i) < a:
-            i += 1
-        # Find the the smallest j value so that t(j) < a + time_delta
-        while t(j+1) < a + time_delta:
-            # print('t(j) inside while loop: ' + str(t(j)))
-            # print('j+1 < len(requests): ' + str(j+1 < len(requests)))
-            # print('j+1: ' + str(j+1))
-            # print('len(requests) ' + str(len(requests)))
-            # check to see we haven't reached the end of the array
-            if j+1 < len(requests)-1:
-                j += 1
-            else:
-                break
-            # print('j inside while loop: ' + str(j))
-        # print('a+time_delta: ' + str(a + time_delta))
-        # print('i: ' + str(i))
-        # print('j: ' + str(j))
-        # print('First element in this interval: t(' + str(i) + '): ' + str(t(i)))
-        # print('Last element in this interval: t(' + str(j) + '): ' + str(t(j)))
-        # print('i: ' + str(i))
-        # print('j: ' + str(j))
-        # m = number of elements in the interval
-        # print(j)
-        # print(len(requests))
-        if j+1 == len(requests)-1:
-            # this whole algorithm doesn't count the last item in the last interval
-            m = j - i + 2
-        else:
-            m = j - i + 1
-        # print('number of elements in time interval: ' + str(m) )
-        # print('i: ' + str(i))
-        # print('t(i): ' + str(t(i)))
-        # print('requests[i].host: ' + str(requests[i].host))
-        update_top_ten(top_ten, a, m, n = 3)
-        # print('m: ' + str(m))
-        # print(top_ten)
-        a = a + 1
-    for ts in top_ten:
-        reconverted_stamp = datetime.datetime.fromtimestamp(ts).strftime('%d/%m/%Y:%H:%M:%S %z')
-        print(str(ts) + ' <-> ' + str(reconverted_stamp) + ' <-> ' + str(top_ten[ts]))
-    top_ten_with_dates = {}
-    for timestamp in top_ten:
-        dt = datetime.datetime.fromtimestamp(int(timestamp)).strftime('%d/%m/%Y:%H:%M:%S %z')
-        dt = dt + '-0400'
-        top_ten_with_dates[dt] = top_ten[timestamp]
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(top_ten)
-    pp.pprint(top_ten_with_dates)
+    # for ts in top_ten:
+    #     reconverted_stamp = datetime.datetime.fromtimestamp(ts).strftime('%d/%m/%Y:%H:%M:%S %z')
+    #     print(str(ts) + ' <-> ' + str(reconverted_stamp) + ' <-> ' + str(top_ten[ts]))
+    # top_ten_with_dates = {}
+    # for timestamp in top_ten:
+    #     dt = datetime.datetime.fromtimestamp(int(timestamp)).strftime('%d/%m/%Y:%H:%M:%S %z')
+    #     dt = dt + '-0400'
+    #     top_ten_with_dates[dt] = top_ten[timestamp]
+    # pp = pprint.PrettyPrinter(indent=4)
+    # pp.pprint(top_ten)
+    # pp.pprint(top_ten_with_dates)
     # print('i: ' + str(i))
     # print('j: ' + str(j))
     # for i, r in enumerate(requests):
     #     print(i, r.timestamp)
 
+pp.pprint('Busiest intervals:')
+pp.pprint(lib.find_busiest_interval(requests, time_interval = 5, n= 3))
