@@ -164,16 +164,6 @@ def top_freq(d, n=10):
                 top.pop(min_key(top), None)
     return top
 
-def order_dict(d):
-    """Order the elements of a dict by their values and return a list
-
-    :param d: dict where the values are postive integers
-        {'a': 0, 'b': 4, 'c': 2}
-    :param: destination file name "ex: hosts.txt"
-    :return: list of tuples the type:
-    [('b',4), ('c',2), ('a',)]
-    """
-
 def write_file(d, file_name, include_values=True):
     """Write the entries of a dict to a file.
 
