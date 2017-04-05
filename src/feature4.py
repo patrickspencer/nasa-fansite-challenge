@@ -19,6 +19,7 @@ import time
 import pprint
 import models
 import settings
+import datetime
 
 if __name__ == "__main__":
     start_time = time.time()
@@ -50,9 +51,9 @@ if __name__ == "__main__":
     # print('Start time: ' + str(a))
     while a+time_delta <= max_time+1:
         # delete times that shouldn't be in bin
-        print(' --- --- --- ---')
+        # print(' --- --- --- ---')
         # print('Start another round of a++: i, j: ' + str(i) + ',' + str(j))
-        print('Time interval: [' + str(a) + ',' + str(a+time_delta - 1) + ']')
+        # print('Time interval: [' + str(a) + ',' + str(a+time_delta - 1) + ']')
         # print('starting i: ' + str(i))
         # print('starting j: ' + str(j))
         while t(i) < a:
@@ -80,21 +81,29 @@ if __name__ == "__main__":
         # print(j)
         # print(len(requests))
         if j+1 == len(requests)-1:
+            # this whole algorithm doesn't count the last item in the last interval
             m = j - i + 2
         else:
             m = j - i + 1
-        print('number of elements in time interval: ' + str(m) )
+        # print('number of elements in time interval: ' + str(m) )
         # print('i: ' + str(i))
         # print('t(i): ' + str(t(i)))
         # print('requests[i].host: ' + str(requests[i].host))
         update_top_ten(top_ten, a, m, n = 3)
-        print('m: ' + str(m))
-        print('requests[i].timestamp: ' + str(requests[i].timestamp))
-        print('i: ' + str(i))
-        print('lib.min_value(d): ' + str(lib.min_value(top_ten)))
-        print('m > lib: min_value(top_ten)' + str(m > lib.min_value(top_ten)))
-        print(top_ten)
+        # print('m: ' + str(m))
+        # print(top_ten)
         a = a + 1
+    for ts in top_ten:
+        reconverted_stamp = datetime.datetime.fromtimestamp(ts).strftime('%d/%m/%Y:%H:%M:%S %z')
+        print(str(ts) + ' <-> ' + str(reconverted_stamp) + ' <-> ' + str(top_ten[ts]))
+    top_ten_with_dates = {}
+    for timestamp in top_ten:
+        dt = datetime.datetime.fromtimestamp(int(timestamp)).strftime('%d/%m/%Y:%H:%M:%S %z')
+        dt = dt + '-0400'
+        top_ten_with_dates[dt] = top_ten[timestamp]
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(top_ten)
+    pp.pprint(top_ten_with_dates)
     # print('i: ' + str(i))
     # print('j: ' + str(j))
     # for i, r in enumerate(requests):
