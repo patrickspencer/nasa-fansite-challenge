@@ -326,7 +326,30 @@ def check_for_mult_logins(requests):
     for r in requests:
         if r.response == '401':
             if r.host in block_list and r.timestamp - max(block_list[r.host]) <= 300:
-                bad_logins.append([r.host, r.date_str])
+                bad_logins.append(r.request_str)
             else:
                 update_401_d(d, r, block_list)
     return bad_logins
+
+def write_blocked(failed_logins):
+    """Write the entries a failed login array (which is an array of request
+    strings that record when failed logins happend) to the file blocked.txt
+
+    :param failed_logins: an array of login attempts within a 5 minute ban
+        windows. The array would look like this:
+
+    ['207.109.29.70 - - [01/Jul/1995:01:28:41 -0400] "POST /login HTTP/1.0" 401 1420',
+     '207.109.29.70 - - [01/Jul/1995:01:35:14 -0400] "POST /login HTTP/1.0" 401 1420',
+     '207.246.17.94 - - [01/Jul/1995:02:51:27 -0400] "POST /login HTTP/1.0" 401 1420']
+
+    :return: Null
+    """
+    file_name = 'blocked.txt'
+    output_location = settings.log_output_file(file_name)
+    try:
+        os.remove(output_location)
+    except OSError:
+        pass
+    with open(output_location, 'a') as file:
+        for line in failed_logins:
+            file.write(line + '\n')

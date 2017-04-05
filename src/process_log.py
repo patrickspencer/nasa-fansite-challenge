@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     fixture = settings.load_fixture('block_list_test.txt')
     requests = lib.read_file(fixture)
-    print(lib.check_for_mult_logins(requests))
+    lib.write_blocked(lib.check_for_mult_logins(requests))
     #
     # pp.pprint(block_list)
 
