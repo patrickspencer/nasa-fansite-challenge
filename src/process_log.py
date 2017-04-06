@@ -9,7 +9,7 @@ from datetime import datetime
 if __name__ == '__main__':
     start_time = time.time()
 
-    print("*** Starting to load file ***\n")
+    print("*** Starting to load file (this will take a couple of minutes)***\n")
 
     log_file_name = 'log.txt'
     log_file = settings.load_log_file(log_file_name)
@@ -19,10 +19,14 @@ if __name__ == '__main__':
 
     print("--- Starting frequency count ---")
 
-    hosts = lib.create_host_freq_hash(requests)
+    # Make copy of list. This is resource intensive but necessary
+    r1 = list(requests)
+    hosts = lib.create_host_freq_hash(r1)
     lib.write_file(lib.top_freq(hosts),'hosts.txt')
 
     print("--- Ending frequency count. Time elapsed: %s secs ---" % (time.time() - start_time))
+    # delete r1 from memory
+    del r1[:]
 
     start_time_2 = time.time()
 
@@ -38,17 +42,19 @@ if __name__ == '__main__':
 
     print("--- Starting search for failed login attempts ---")
 
-    fixture = settings.load_fixture('block_list_test.txt')
-    requests = lib.read_file(fixture)
-    lib.write_blocked(lib.check_for_mult_logins(requests))
+    r3 = list(requests)
+    lib.write_blocked(lib.check_for_mult_logins(r3))
 
     print("--- Ending search for failed login attempts. Time elapsed: %s secs ---" % (time.time() - start_time_3))
+    # delete r3 from memory
+    del r3[:]
 
     start_time_4 = time.time()
 
     print("--- Starting search for busiest hours ---")
 
-    intervals = lib.find_busiest_intervals(requests, time_interval = 3600, n = 11)
+    r4 = list(requests)
+    intervals = lib.find_busiest_intervals(r4, time_interval = 3600, n = 11)
     lib.write_busiest_times(intervals)
 
     print("--- Ending search for busiest hours. Time elapsed: %s secs ---" % (time.time() - start_time_4))
