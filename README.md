@@ -3,7 +3,10 @@
 This program is a pure python3 program. To run the file enter `python3
 src/process_log.py`
 
-Tests are included at `src/tests.py`
+Tests are included at `src/tests.py` along with tst fixtures in
+`insight_testsuite/local/fixtures/`.
+
+## Speed
 
 I know python isn't the fastest language and if I could I would write this in
 a language like go but for now it seems. Fast enough. It takes about 5
@@ -11,6 +14,15 @@ minutes to process the whole log file with all 4 features, about 2 minutes of
 this is reading `log.txt` into a memory. This isn't ideal but it was easier
 to program doing this. In the future I would work on reading the log file in
 as a stream.
+
+The question is whether this is fast enough to use in real world situations. I
+would say so. An analysis of the busiest hour shows that the nasa site got
+less than 40,000 requests in it's beusiest hour. This program can process a
+log file of about 100,000 requests in about a minutes. The most demanding
+process is reading the log file into memory. If the requests from the log file
+are in persistance storage already then the program should be able to process
+the file incoming logs in less than a minute. This would even be comparing the
+incoming requests to the older requests as well.
 
 ## Features
 
@@ -26,7 +38,12 @@ you want the interval to be.
 
 ### Feature 1
 
-This takes about 5 seconds on my computer.
+This takes about 8 seconds on my computer after the log file has been loaded.
+
+The algorithm is as follows. The program reads the requests one by one. Each
+time if updates a frequency hash that keeps track of the number of times a
+host has requested a resource. The frequency hash only keeps track of the top
+ten frequencies in order to save memory.
 
 #### Explanation of algorithm
 
@@ -85,3 +102,6 @@ function `src.lib.find_busiest_intervals()`.
 
 This takes about 2 seconds on my computer
 
+## Speed
+
+Even though
