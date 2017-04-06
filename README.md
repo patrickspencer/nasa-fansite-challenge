@@ -49,13 +49,11 @@ ten frequencies in order to save memory.
 
 ### Feature 2
 
-This takes about 2 minutes on my computer. This is by far the longest time of
-all the features.
+This takes about 2 minutes on my computer after the log file has been read.
 
 #### Explanation of algorithm
 
-We are supposed to find the 10 resources that take up the most bandwidth. We
-use the simple formula `(bytes per resource)(times the resources were
+We use the simple formula `(bytes per resource)(times the resources were
 downloaded)`. The time period is the whole period covered by the logs. We
 don't measure bandwidth used over an arbitrary time interval but this would be
 a useful feature in the future.
@@ -64,15 +62,14 @@ We take the first resource in the first request and search the entire file for
 all requests with that resource and take out each line with that resource. We
 count up the amount of bytes used for that resource and then look for all
 request for the next resources over this pruned list. This algorithm is
-O(nlog(n)).
+O(nlog(n)). The dict has to keep track of all the resources (and not just the
+top ten used so far) because we're not sure how many more requests might come
+in for that resource at the end of the log file. There is probably a better
+way to do this.
 
 ### Feature 3
 
-This takes about 2 seconds on my computer
-
-Running this is feature is the fastest of all the features in this program. It
-takes about 8.5 seconds to run after each line from the log file has been
-loaded into memory.
+This takes about 8.5 seconds to run after the log file has been read.
 
 #### Explanation of algorithm
 
@@ -100,8 +97,10 @@ function `src.lib.find_busiest_intervals()`.
 
 ### Feature 4
 
-This takes about 2 seconds on my computer
-
-## Speed
-
-Even though
+This takes less than second on my computer after the log file has been read.
+The program goes through each request and keeps track of the last two
+timestamps for each host. If the newest timestamp is within 20 seconds of the
+timestamp from two requests ago then the host is added to a blocked list.
+On every check of a request the program also checks the request against a dict 
+of blocked hosts. The dict of blocked hosts just contains a list of timestamps
+which started a 5 minute ban. If the current requests timestamp is within the last 5 minute ban start time then the currect request is added to a list of blocked requests. This is the list that is ultimately recorded.
