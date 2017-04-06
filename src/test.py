@@ -174,11 +174,11 @@ class TestLib(unittest.TestCase):
         self.assertTrue(failed_logins[1] == '207.109.29.70 - - [01/Jul/1995:01:35:14 -0400] "POST /login HTTP/1.0" 401 1420')
         self.assertTrue(failed_logins[2] == '207.246.17.94 - - [01/Jul/1995:02:51:27 -0400] "POST /login HTTP/1.0" 401 1420')
     def test_find_busiest_intervals(self):
-        # fixture = settings.load_fixture('busiest_hour_test.txt')
-        # requests = lib.read_file(fixture)
-        log_file_name = 'log_head_1000.txt'
-        log_file = settings.load_log_file(log_file_name)
-        requests = lib.read_file(log_file)
+        fixture = settings.load_fixture('busiest_hour_test.txt')
+        requests = lib.read_file(fixture)
+        # log_file_name = 'log.txt'
+        # log_file = settings.load_log_file(log_file_name)
+        # requests = lib.read_file(log_file)
         intervals = lib.find_busiest_intervals(requests, time_interval = 5, n = 11)
         print(intervals)
         self.assertTrue(intervals[804571201] == 1)
@@ -192,6 +192,7 @@ class TestLib(unittest.TestCase):
         self.assertTrue(intervals[804571209] == 20)
         self.assertTrue(intervals[804571210] == 21)
         self.assertTrue(intervals[804571211] == 24)
+        print(intervals)
 
     def test_timestamp_to_date_str(self):
         dates = [
