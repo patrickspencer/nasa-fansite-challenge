@@ -51,6 +51,6 @@ if __name__ == '__main__':
     intervals = lib.find_busiest_intervals(requests, time_interval = 3600, n = 11)
     lib.write_busiest_times(intervals)
 
-    print("--- Endign search for busiest hours. Time elapsed: %s secs ---" % (time.time() - start_time_4))
+    print("--- Ending search for busiest hours. Time elapsed: %s secs ---" % (time.time() - start_time_4))
 
     print("--- Total run time: %s seconds ---" % (time.time() - start_time))
